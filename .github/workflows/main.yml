@@ -16,7 +16,7 @@ jobs:
         
     - name: Unzip Project Files
       run: |
-        unzip -o punchy.zip
+        unzip -o punchy_update.zip
         chmod +x gradlew
         
     - name: Build with Gradle
