@@ -8,23 +8,26 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    # 1. Kita pasang Java 16 (Sangat pas untuk Fabric 1.16.5)
     - name: Set up JDK 16
       uses: actions/setup-java@v4
       with:
         java-version: '16'
         distribution: 'adopt'
 
-    - name: Setup Gradle 7.3 Wrapper
-      run: |
-        # Memakai Gradle 7.3 yang sangat stabil untuk Java 16 dan MC 1.16.5
-        gradle wrapper --gradle-version 7.3
-        chmod +x gradlew
-        
+    # 2. Kita kunci versi Gradle langsung di angka 7.3 agar tidak melompat ke versi 9
+    - name: Setup Gradle 7.3
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '7.3'
+
+    # 3. Ekstrak folder kodingan kamu
     - name: Unzip Src Folder
       run: |
         if [ -f src.zip ]; then
           unzip -o src.zip
         fi
-        
-    - name: Build with Gradle
-      run: ./gradlew build
+
+    # 4. Jalankan rakitan langsung menggunakan perintah gradle bawaan sistem
+    - name: Build Mod
+      run: gradle build
