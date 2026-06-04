@@ -13,22 +13,18 @@ jobs:
       with:
         java-version: '21'
         distribution: 'adopt'
-        
-    - name: Unzip Project Files
+
+    - name: Setup Gradle Wrapper
       run: |
-        find . -name "*.zip" -exec unzip -o {} \;
-        find . -name "gradlew" -exec chmod +x {} \;
+        # Menggenerasi ulang folder gradle yang hilang langsung di server
+        gradle wrapper --gradle-version 7.6
+        chmod +x gradlew
+        
+    - name: Unzip Src Folder
+      run: |
+        if [ -f src.zip ]; then
+          unzip -o src.zip
+        fi
         
     - name: Build with Gradle
-      run: |
-        if [ -f ./gradlew ]; then
-          ./gradlew build
-        else
-          cd $(find . -name "gradlew" -exec dirname {} \;) && ./gradlew build
-        fi
-
-    - name: Capture Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: PunchyMod-Jar
-        path: "**/build/libs/*.jar"
+      run: ./gradlew build
