@@ -1,4 +1,4 @@
-name: Build Mod Jar Manual
+name: Build Fabric Mod
 
 on: [push, pull_request]
 
@@ -8,40 +8,32 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up JDK 16
+    # Memasang Java 17 agar server memiliki kamus compiler yang modern
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '16'
+        java-version: '17'
         distribution: 'adopt'
 
+    # Mengunci sistem di Gradle 7.3 agar tidak melompat ke versi 9
+    - name: Setup Gradle 7.3
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '7.3'
+
+    # Ekstrak folder kodingan kamu dari HP
     - name: Unzip Src Folder
       run: |
         if [ -f src.zip ]; then
           unzip -o src.zip
         fi
 
-    # 1. Memeriksa ulang sintaks kode Java kamu (Bypass Gradle)
-    - name: Verify Code Syntax
-      run: |
-        echo "Memeriksa kode mod..."
-        if [ -d "src" ]; then
-          find src -name "*.java" -exec javac -source 16 -target 16 {} +
-        fi
+    # Menjalankan perakitan resmi menggunakan Gradle sistem
+    - name: Build Mod Jar
+      run: gradle build
 
-    # 2. Membuat file .jar secara manual langsung dari folder proyekmu
-    - name: Pack Mod Into Jar
-      run: |
-        echo "Membungkus file mod menjadi .jar..."
-        mkdir -p build/libs
-        # Mengompres kodingan dan aset menjadi file .jar matang
-        zip -r build/libs/PunchyAnimation-Mod.jar fabric.mod.json assets/ data/ -x "src/*" "gradle*" ".git*" || true
-        if [ -d "src/main/resources" ]; then
-          cd src/main/resources && zip -r ../../../build/libs/PunchyAnimation-Mod.jar ./* && cd ../../../
-        fi
-        echo "Pembungkusan selesai!"
-
-    # 3. Memunculkan tombol download file .jar di GitHub Actions!
-    - name: Upload Built Jar
+    # Memunculkan tombol download jika sukses
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Fabric-Mod-Jar
