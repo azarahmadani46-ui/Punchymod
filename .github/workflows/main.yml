@@ -1,0 +1,29 @@
+name: Build Fabric Mod
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK 16
+      uses: actions/setup-java@v3
+      with:
+        java-version: '16'
+        distribution: 'adopt'
+        
+    - name: Unzip Project Files
+      run: |
+        unzip -o punchy.zip
+        chmod +x gradlew
+        
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Capture Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: PunchyMod-Jar
+        path: build/libs/*.jar
