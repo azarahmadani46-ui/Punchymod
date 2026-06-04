@@ -8,26 +8,26 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    # 1. Kita pasang Java 16 (Sangat pas untuk Fabric 1.16.5)
-    - name: Set up JDK 16
+    # Kita pakai Java 21 agar Fabric Loom tidak protes kompatibilitas lagi
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '16'
+        java-version: '21'
         distribution: 'adopt'
 
-    # 2. Kita kunci versi Gradle langsung di angka 7.3 agar tidak melompat ke versi 9
-    - name: Setup Gradle 7.3
+    # Kita kunci ke Gradle 8.5 yang stabil dan mendukung penuh Java 21
+    - name: Setup Gradle 8.5
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: '7.3'
+        gradle-version: '8.5'
 
-    # 3. Ekstrak folder kodingan kamu
+    # Ekstrak folder kodingan kamu
     - name: Unzip Src Folder
       run: |
         if [ -f src.zip ]; then
           unzip -o src.zip
         fi
 
-    # 4. Jalankan rakitan langsung menggunakan perintah gradle bawaan sistem
+    # Rakit mod langsung menggunakan perintah sistem
     - name: Build Mod
       run: gradle build
