@@ -8,21 +8,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up JDK 21
+    - name: Set up JDK 16
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '16'
         distribution: 'adopt'
 
-    - name: Setup Gradle 8.5 Wrapper
+    - name: Setup Gradle 7.3 Wrapper
       run: |
-        # Memaksa server membuat folder gradle versi baru yang cocok dengan Java 21
-        gradle wrapper --gradle-version 8.5
+        # Memakai Gradle 7.3 yang sangat stabil untuk Java 16 dan MC 1.16.5
+        gradle wrapper --gradle-version 7.3
         chmod +x gradlew
         
     - name: Unzip Src Folder
       run: |
-        # Membongkar src.zip jika ada di beranda
         if [ -f src.zip ]; then
           unzip -o src.zip
         fi
