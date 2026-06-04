@@ -1,0 +1,26 @@
+package com.punchyanimation.mixin;
+
+import net.minecraft.client.render.item.HeldItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.Hand;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(HeldItemRenderer.class)
+public class PunchyHandMixin {
+
+    @Inject(method = "renderFirstPersonItem", at = @At("HEAD"))
+    private void onRenderFirstPersonItem(float tickDelta, float pitch, Hand hand, float swingProgress, MatrixStack matrices, CallbackInfo ci) {
+        if (hand == Hand.MAIN_HAND && swingProgress > 0.0F) {
+            // Formula animasi pukulan tangan untuk Minecraft 1.16.5
+            float animationCurve = (float) Math.sin(swingProgress * Math.PI);
+            matrices.translate(0.0D, animationCurve * 0.1D, 0.0D);
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(animationCurve * 15.0F));
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(animationCurve * -10.0F));
+        }
+    }
+}
+
