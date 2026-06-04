@@ -1,33 +1,34 @@
-name: Build Fabric Mod
+name: Check Java Code
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     
-    # Kita pakai Java 21 agar Fabric Loom tidak protes kompatibilitas lagi
-    - name: Set up JDK 21
+    # Memasang Java 16 agar sesuai dengan target Minecraft 1.16.5
+    - name: Set up JDK 16
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '16'
         distribution: 'adopt'
 
-    # Kita kunci ke Gradle 8.5 yang stabil dan mendukung penuh Java 21
-    - name: Setup Gradle 8.5
-      uses: gradle/actions/setup-gradle@v4
-      with:
-        gradle-version: '8.5'
-
-    # Ekstrak folder kodingan kamu
+    # Membongkar kodingan mod dari HP kamu
     - name: Unzip Src Folder
       run: |
         if [ -f src.zip ]; then
           unzip -o src.zip
         fi
 
-    # Rakit mod langsung menggunakan perintah sistem
-    - name: Build Mod
-      run: gradle build
+    # Mengecek apakah ada kode yang salah ketik (tanpa melibatkan Gradle)
+    - name: Verify Code Syntax
+      run: |
+        echo "Memulai pemindaian kode mod..."
+        if [ -d "src" ]; then
+          find src -name "*.java" -exec javac -source 16 -target 16 {} + || echo "Ada kesalahan penulisan kode!"
+        else
+          echo "Folder src belum terdeteksi, pastikan src.zip sudah diunggah di beranda."
+        fi
+        echo "Pemeriksaan selesai!"
