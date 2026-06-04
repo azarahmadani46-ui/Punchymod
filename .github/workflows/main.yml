@@ -1,34 +1,36 @@
-name: Check Java Code
+name: Build Fabric Mod Jar
 
 on: [push, pull_request]
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     
-    # Memasang Java 16 agar sesuai dengan target Minecraft 1.16.5
     - name: Set up JDK 16
       uses: actions/setup-java@v4
       with:
         java-version: '16'
         distribution: 'adopt'
 
-    # Membongkar kodingan mod dari HP kamu
+    - name: Setup Gradle 7.5.1
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '7.5.1'
+
     - name: Unzip Src Folder
       run: |
         if [ -f src.zip ]; then
           unzip -o src.zip
         fi
 
-    # Mengecek apakah ada kode yang salah ketik (tanpa melibatkan Gradle)
-    - name: Verify Code Syntax
-      run: |
-        echo "Memulai pemindaian kode mod..."
-        if [ -d "src" ]; then
-          find src -name "*.java" -exec javac -source 16 -target 16 {} + || echo "Ada kesalahan penulisan kode!"
-        else
-          echo "Folder src belum terdeteksi, pastikan src.zip sudah diunggah di beranda."
-        fi
-        echo "Pemeriksaan selesai!"
+    - name: Build Mod Jar File
+      run: gradle build
+
+    # Langkah tambahan untuk memunculkan tombol download file .jar jika sukses!
+    - name: Upload Built Jar
+      uses: actions/upload-artifact@v4
+      with:
+        name: Fabric-Mod-Jar
+        path: build/libs/*.jar
