@@ -1,6 +1,10 @@
 name: Build Fabric Mod
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
   build:
@@ -8,31 +12,26 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    # Memasang Java 17 agar server memiliki kamus compiler yang modern
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
-        distribution: 'adopt'
+        distribution: 'temurin'
 
-    # Mengunci sistem di Gradle 7.3 agar tidak melompat ke versi 9
-    - name: Setup Gradle 7.3
+    - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
         gradle-version: '7.3'
 
-    # Ekstrak folder kodingan kamu dari HP
     - name: Unzip Src Folder
       run: |
         if [ -f src.zip ]; then
           unzip -o src.zip
         fi
 
-    # Menjalankan perakitan resmi menggunakan Gradle sistem
     - name: Build Mod Jar
-      run: gradle build
+      run: gradle build --no-daemon
 
-    # Memunculkan tombol download jika sukses
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
